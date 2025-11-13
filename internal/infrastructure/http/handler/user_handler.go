@@ -13,19 +13,19 @@ import (
 
 type UserHandler struct {
 	service *user.Service
-	error   *errors.AppError
 	logger  logger.Logger
+	errors.AppError
 }
 
 func NewUserHandler(service *user.Service, logger logger.Logger) *UserHandler {
-	return &UserHandler{service: service, error: errors.New(nil), logger: logger}
+	return &UserHandler{service: service, AppError: *errors.New(logger), logger: logger}
 }
 
 func (h *UserHandler) GetUser(c *gin.Context) {
 	id, _ := strconv.ParseInt(c.Param("id"), 10, 64)
 	u, err := h.service.GetUser(id)
 	if err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "user not found"})
+		h.NotFoundResponse(c.Writer, c.Request)
 		return
 	}
 	c.JSON(http.StatusOK, u)

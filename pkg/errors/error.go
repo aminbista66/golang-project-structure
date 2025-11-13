@@ -50,36 +50,36 @@ func (e *AppError) errorResponse(w http.ResponseWriter, r *http.Request, status 
 	}
 }
 
-func (e *AppError) serverErrorResponse(w http.ResponseWriter, r *http.Request, err error) {
+func (e *AppError) ServerErrorResponse(w http.ResponseWriter, r *http.Request, err error) {
 	e.logError(r, err)
 	message := "the server encountered a problem and could not process your request"
 	e.errorResponse(w, r, http.StatusInternalServerError, message)
 }
 
-func (e *AppError) notFoundResponse(w http.ResponseWriter, r *http.Request) {
+func (e *AppError) NotFoundResponse(w http.ResponseWriter, r *http.Request) {
 	message := "the requested resource could not be found"
 	e.errorResponse(w, r, http.StatusNotFound, message)
 }
 
-func (e *AppError) methodNotAllowedResponse(w http.ResponseWriter, r *http.Request) {
+func (e *AppError) MethodNotAllowedResponse(w http.ResponseWriter, r *http.Request) {
 	message := fmt.Sprintf("the %s method is not supported for this resource", r.Method)
 	e.errorResponse(w, r, http.StatusMethodNotAllowed, message)
 }
 
-func (e *AppError) badRequestResponse(w http.ResponseWriter, r *http.Request, err error) {
+func (e *AppError) BadRequestResponse(w http.ResponseWriter, r *http.Request, err error) {
 	e.errorResponse(w, r, http.StatusBadRequest, err.Error())
 }
 
-func (e *AppError) failedValidationResponse(w http.ResponseWriter, r *http.Request, errors map[string]string) {
+func (e *AppError) FailedValidationResponse(w http.ResponseWriter, r *http.Request, errors map[string]string) {
 	e.errorResponse(w, r, http.StatusUnprocessableEntity, errors)
 }
 
-func (e *AppError) editConflictResponse(w http.ResponseWriter, r *http.Request) {
+func (e *AppError) EditConflictResponse(w http.ResponseWriter, r *http.Request) {
 	message := "unable to update the record due to an edit conflict, please try again"
 	e.errorResponse(w, r, http.StatusConflict, message)
 }
 
-func (e *AppError) rateLimitExceededResponse(w http.ResponseWriter, r *http.Request) {
+func (e *AppError) RateLimitExceededResponse(w http.ResponseWriter, r *http.Request) {
 	message := "rate limit exceeded"
 	e.errorResponse(w, r, http.StatusTooManyRequests, message)
 }
