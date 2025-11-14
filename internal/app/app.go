@@ -8,14 +8,14 @@ import (
 	// "myapp/internal/domain/user"
 	// userpg "myapp/internal/domain/user"
 	// "myapp/internal/infrastructure/database"
-	// "myapp/internal/infrastructure/http/handler"
+	"myapp/internal/infrastructure/http/handler"
 	"myapp/internal/infrastructure/logger"
 	jsonlog "myapp/internal/infrastructure/logger/jsonlog"
+	"myapp/internal/infrastructure/middlewares"
 
 	"github.com/gin-gonic/gin"
 )
 
-var L = jsonlog.New(os.Stdout, jsonlog.LevelInfo)
 
 type Container struct {
 	Router *gin.Engine
@@ -32,10 +32,20 @@ func Initialize(cfg *config.Config) (*Container, error) {
 	// userRepo := userpg.NewPostgresRepository(db)
 	// userSvc := user.NewService(userRepo)
 	// userHandler := handler.NewUserHandler(userSvc, L)
+	
+	router := gin.New()
+	container := &Container{Router: router, Logger: jsonlog.New(os.Stdout, jsonlog.LevelInfo)}
 
-	router := gin.Default()
+	
+	middlewares := middlewares.New(container.Logger)
+	router.Use(gin.Recovery())
+	router.Use(middlewares.AssignCorrelationId())
+	router.Use(middlewares.LogRequest())
+
+	router.GET("/api/health", handler.NewHealthCheckHandler(container.Logger).GetHealthCheck)
+
 	// router.GET("/api/users/:id", userHandler.GetUser)
 	// router.POST("/api/users", userHandler.CreateUser)
 
-	return &Container{Router: router, Logger: L}, nil
+	return container, nil
 }

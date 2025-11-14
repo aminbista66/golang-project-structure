@@ -1,26 +1,35 @@
 package tasks
 
 import (
+	jsonlog "myapp/internal/infrastructure/logger/jsonlog"
 	"sync"
-	"myapp/internal/app"
 )
 
-var wg sync.WaitGroup
+type TaskManager struct {
+	wg     *sync.WaitGroup
+	Logger *jsonlog.Logger
+}
+
+func New(logger *jsonlog.Logger, wg *sync.WaitGroup) *TaskManager {
+	return &TaskManager{
+		Logger: logger,
+		wg:     wg,
+	}
+}
 
 // Go runs a background function safely and tracks it in the central WaitGroup.
 // The name parameter is optional but helps with debugging/logging.
-func Background(name string, fn func()) {
-	wg.Add(1)
+func (tm *TaskManager) Background(name string, fn func()) {
+	tm.wg.Add(1)
 	go func() {
 		defer func() {
 			if r := recover(); r != nil {
-				app.L.PrintError("panic recovered in background task ["+name+"]", map[string]string{})
+				tm.Logger.PrintError("panic recovered in background task ["+name+"]", map[string]string{})
 			}
-			wg.Done()
-			app.L.PrintInfo("task ["+name+"] finished", map[string]string{})
+			tm.wg.Done()
+			tm.Logger.PrintInfo("task ["+name+"] finished", map[string]string{})
 		}()
-		app.L.PrintInfo("starting background task ["+name+"]", map[string]string{})
+		tm.Logger.PrintInfo("starting background task ["+name+"]", map[string]string{})
 		fn()
 	}()
 }
-

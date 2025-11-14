@@ -17,6 +17,7 @@ import (
 func main() {
 	cfg := config.Load()
 	container, err := app.Initialize(cfg)
+
 	if err != nil {
 		log.Fatalf("failed to initialize container: %v", err)
 	}

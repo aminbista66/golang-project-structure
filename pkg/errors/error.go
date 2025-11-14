@@ -20,6 +20,7 @@ func New(l logger.Logger) *AppError {
 	return &AppError{Logger: l}
 }
 
+
 // LogRequest logs the provided error along with some request metadata if a
 // logger was supplied when the AppError was created.
 func (e *AppError) LogRequest(r *http.Request, err error) {
