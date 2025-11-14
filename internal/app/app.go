@@ -5,10 +5,10 @@ import (
 	"sync"
 
 	"myapp/internal/config"
-	"myapp/internal/domain/user"
-	userpg "myapp/internal/domain/user"
-	"myapp/internal/infrastructure/database"
-	"myapp/internal/infrastructure/http/handler"
+	// "myapp/internal/domain/user"
+	// userpg "myapp/internal/domain/user"
+	// "myapp/internal/infrastructure/database"
+	// "myapp/internal/infrastructure/http/handler"
 	"myapp/internal/infrastructure/logger"
 	jsonlog "myapp/internal/infrastructure/logger/jsonlog"
 
@@ -24,18 +24,18 @@ type Container struct {
 }
 
 func Initialize(cfg *config.Config) (*Container, error) {
-	db, err := database.NewPostgres(cfg.Database.DSN)
-	if err != nil {
-		return nil, err
-	}
+	// db, err := database.NewPostgres(cfg.Database.DSN)
+	// if err != nil {
+	// 	return nil, err
+	// }
 
-	userRepo := userpg.NewPostgresRepository(db)
-	userSvc := user.NewService(userRepo)
-	userHandler := handler.NewUserHandler(userSvc, L)
+	// userRepo := userpg.NewPostgresRepository(db)
+	// userSvc := user.NewService(userRepo)
+	// userHandler := handler.NewUserHandler(userSvc, L)
 
 	router := gin.Default()
-	router.GET("/api/users/:id", userHandler.GetUser)
-	router.POST("/api/users", userHandler.CreateUser)
+	// router.GET("/api/users/:id", userHandler.GetUser)
+	// router.POST("/api/users", userHandler.CreateUser)
 
 	return &Container{Router: router, Logger: L}, nil
 }
