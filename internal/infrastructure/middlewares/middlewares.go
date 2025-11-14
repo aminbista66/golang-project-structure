@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"myapp/internal/infrastructure/logger"
 	"myapp/pkg/errors"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
@@ -29,13 +30,20 @@ func (m *MiddlewareManager) LogRequest() gin.HandlerFunc {
 		} else {
 			correlationIdStr = ""
 		}
+
+		t := time.Now()
+		
+		c.Next()
+		
+		latency := time.Since(t)
 		m.Logger.PrintInfo(fmt.Sprintf("%s request at %s", c.Request.Method, c.Request.URL.Path), map[string]string{
 			"method":        c.Request.Method,
 			"path":          c.Request.URL.Path,
 			"host":          c.Request.Host,
 			"correlationId": correlationIdStr,
+			"latency":       latency.String(),
+			"status":        fmt.Sprintf("%d", c.Writer.Status()),
 		})
 
-		c.Next()
 	}
 }
